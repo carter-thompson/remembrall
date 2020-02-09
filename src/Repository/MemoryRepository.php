@@ -28,6 +28,13 @@ class MemoryRepository extends ServiceEntityRepository
         return $memory->getId();
     }
 
+    public function getAll(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Memory[] Returns an array of Memory objects
     //  */
