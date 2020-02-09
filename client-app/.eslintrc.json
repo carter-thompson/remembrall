@@ -1,0 +1,9 @@
+{
+  "extends": "react-app",
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {}
+}
