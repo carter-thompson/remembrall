@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Memory\CreateMemoryCommand;
-use App\Memory\ListMemory;
 use App\Memory\ListMemoryQuery;
-use App\Memory\ListRandomMemory;
 use App\Memory\ListRandomMemoryQuery;
 use DateTime;
 use Exception;
