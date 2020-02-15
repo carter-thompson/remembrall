@@ -2,13 +2,18 @@
 
 namespace App\Controller;
 
-use App\Memory\CreateMemory;
+use App\Memory\CreateMemoryCommand;
 use App\Memory\ListMemory;
+use App\Memory\ListMemoryQuery;
 use App\Memory\ListRandomMemory;
+use App\Memory\ListRandomMemoryQuery;
+use DateTime;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -17,17 +22,32 @@ use Symfony\Component\Routing\Annotation\Route;
 class MemoryController extends AbstractController
 {
     /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
+    public function __construct(MessageBusInterface $messageBus)
+    {
+        $this->messageBus = $messageBus;
+    }
+    /**
      * @Route("", name="create_memory", methods={"POST"})
      */
     public function createMemory(
-        Request $request,
-        CreateMemory $createMemory,
-        ListMemory $listMemory
+        Request $request
     ): Response {
         $data = json_decode($request->getContent(), true);
-        $memoryId = $createMemory->create($data['text']);
+        $dateCreated = new DateTime();
+        $memoryEnvelope = $this->messageBus->dispatch(new CreateMemoryCommand($data['text'], $dateCreated));
+        /** @var StampInterface $memoryMessage */
+        $memoryMessage = $memoryEnvelope->last(HandledStamp::class);
+        $memoryId = $memoryMessage->getResult();
 
-        $memory = $listMemory->findById($memoryId);
+        $listMemoryEnvelope = $this->messageBus->dispatch($memoryId);
+        /** @var StampInterface $listMemoryMessage */
+        $listMemoryMessage = $listMemoryEnvelope->last(HandledStamp::class);
+        $memory = $listMemoryMessage->getResult();
+
         $json = json_encode([
             'id' => $memory->getId(),
             'data' => $memory->getData(),
@@ -40,12 +60,14 @@ class MemoryController extends AbstractController
     /**
      * @Route("/{id}", name="list_memory", methods={"GET"}, requirements={"id"="\d+"})
      * @param int $id
-     * @param ListMemory $listMemory
      */
-    public function list(int $id, ListMemory $listMemory): Response
+    public function list(int $id): Response
     {
         try {
-            $memory = $listMemory->findById($id);
+            $memoryEnvelope = $this->messageBus->dispatch(new ListMemoryQuery($id));
+            /** @var StampInterface $memoryMessage */
+            $memoryMessage = $memoryEnvelope->last(HandledStamp::class);
+            $memory = $memoryMessage->getResult();
             $json = json_encode([
                 'id' => $memory->getId(),
                 'data' => $memory->getData(),
@@ -65,11 +87,13 @@ class MemoryController extends AbstractController
 
     /**
      * @Route("/random", name="list_random_memory", methods={"GET"})
-     * @param ListRandomMemory $listRandomMemory
      */
-    public function listRandom(ListRandomMemory $listRandomMemory): Response
+    public function listRandom(): Response
     {
-        $memory = $listRandomMemory->getRandom();
+        $memoryEnvelope = $this->messageBus->dispatch(new ListRandomMemoryQuery());
+        /** @var StampInterface $memoryMessage */
+        $memoryMessage = $memoryEnvelope->last(HandledStamp::class);
+        $memory = $memoryMessage->getResult();
 
         $json = json_encode([
             'id' => $memory->getId(),

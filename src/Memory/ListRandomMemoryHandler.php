@@ -4,11 +4,12 @@ namespace App\Memory;
 
 use App\Entity\Memory;
 use App\Repository\MemoryRepository;
+use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class ListRandomMemory
+class ListRandomMemoryHandler implements MessageHandlerInterface
 {
     /**
-     * @var MemoryRepository $memoryRepository
+     * @var MemoryRepository
      */
     private $memoryRepository;
 
@@ -17,7 +18,7 @@ class ListRandomMemory
         $this->memoryRepository = $memoryRepository;
     }
 
-    public function getRandom(): Memory
+    public function __invoke(ListRandomMemoryQuery $query): Memory
     {
         $memories = $this->memoryRepository->getAll();
         $memory = $memories[array_rand($memories)];
