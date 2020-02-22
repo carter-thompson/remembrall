@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Memory } from "../../shared/utils";
+import { Memory } from "../../shared/types";
 
 export default function RandomMemory() {
   const [memory, setMemory] = useState<Memory | undefined>(undefined);
