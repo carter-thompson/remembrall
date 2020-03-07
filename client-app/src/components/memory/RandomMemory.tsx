@@ -23,6 +23,11 @@ export default function RandomMemory() {
 
   return (
     <>
+    {!memory && fetchData() && (
+      <div>
+        loading...
+      </div>
+    )}
       {memory && (
         <div>
           <p>{memory.data}</p>
