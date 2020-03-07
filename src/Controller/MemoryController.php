@@ -36,12 +36,12 @@ class MemoryController extends AbstractController
     ): Response {
         $data = json_decode($request->getContent(), true);
         $dateCreated = new DateTime();
-        $memoryEnvelope = $this->messageBus->dispatch(new CreateMemoryCommand($data['text'], $dateCreated));
+        $memoryEnvelope = $this->messageBus->dispatch(new CreateMemoryCommand($data['data'], $dateCreated));
         /** @var StampInterface $memoryMessage */
         $memoryMessage = $memoryEnvelope->last(HandledStamp::class);
         $memoryId = $memoryMessage->getResult();
 
-        $listMemoryEnvelope = $this->messageBus->dispatch($memoryId);
+        $listMemoryEnvelope = $this->messageBus->dispatch(new ListMemoryQuery($memoryId));
         /** @var StampInterface $listMemoryMessage */
         $listMemoryMessage = $listMemoryEnvelope->last(HandledStamp::class);
         $memory = $listMemoryMessage->getResult();
@@ -52,7 +52,10 @@ class MemoryController extends AbstractController
             'dateCreated' => $memory->getDateCreated()->format('Y-m-d')
         ]);
 
-        return new Response($json, 201);
+        return new Response($json, 201, [
+            'Content-Type' => 'application/json',
+            'Access-Controll-Allow-Origin' => '*'
+        ]);
     }
 
     /**
