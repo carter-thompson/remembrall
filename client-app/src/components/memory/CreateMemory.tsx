@@ -34,7 +34,6 @@ export default function CreateMemory(): JSX.Element {
       <p>{savedMemory?.id}</p>
       <p>{savedMemory?.data}</p>
       <p>{savedMemory?.dateCreated}</p>
-      <p>Create Memory!!!?</p>
       <label>Memory:</label>
       <input
         type="text"
