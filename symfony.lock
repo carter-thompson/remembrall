@@ -139,6 +139,9 @@
     "symfony/dependency-injection": {
         "version": "v5.0.4"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
+    },
     "symfony/doctrine-bridge": {
         "version": "v5.0.4"
     },
@@ -193,10 +196,10 @@
         ]
     },
     "symfony/http-foundation": {
-        "version": "v5.0.4"
+        "version": "v5.0.7"
     },
     "symfony/http-kernel": {
-        "version": "v5.0.4"
+        "version": "v5.1.5"
     },
     "symfony/maker-bundle": {
         "version": "1.0",
@@ -218,15 +221,6 @@
         "files": [
             "config/packages/messenger.yaml"
         ]
-    },
-    "symfony/mime": {
-        "version": "v5.0.4"
-    },
-    "symfony/polyfill-intl-idn": {
-        "version": "v1.13.1"
-    },
-    "symfony/polyfill-intl-normalizer": {
-        "version": "v1.18.1"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.13.1"
